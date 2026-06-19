@@ -33,7 +33,7 @@ public class AccountantServiceTests : TestBase
     public async Task GetIncomeAsync_ReturnsSum_ForPLN_WithoutSoftwareId_ExpectedFalse()
     {
         using var ctx = SeedBasicContext();
-        var currency = new FakeCurrencyService(1m);
+        var currency = new TestCurrencyService(1m);
 
         var service = new AccountantService(ctx, currency);
 
@@ -69,7 +69,7 @@ public class AccountantServiceTests : TestBase
 
         ctx.SaveChanges();
 
-        var currency = new FakeCurrencyService(1m);
+        var currency = new TestCurrencyService(1m);
         var service = new AccountantService(ctx, currency);
 
         var result = await service.GetIncomeAsync(1, "PLN", false, CancellationToken.None);
@@ -87,7 +87,7 @@ public class AccountantServiceTests : TestBase
     {
         using var ctx = SeedBasicContext();
 
-        var currency = new FakeCurrencyService(4m); // USD = 4 PLN
+        var currency = new TestCurrencyService(4m); // USD = 4 PLN
         var service = new AccountantService(ctx, currency);
 
         var result = await service.GetIncomeAsync(null, "USD", false, CancellationToken.None);
@@ -101,7 +101,7 @@ public class AccountantServiceTests : TestBase
     {
         using var ctx = SeedBasicContext();
 
-        var currency = new FakeCurrencyService(new NotFoundException("Currency not found"));
+        var currency = new TestCurrencyService(new NotFoundException("Currency not found"));
         var service = new AccountantService(ctx, currency);
 
         await Assert.ThrowsAsync<NotFoundException>(() =>

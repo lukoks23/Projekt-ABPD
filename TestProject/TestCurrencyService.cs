@@ -1,17 +1,17 @@
 ﻿using API.Services.BusinessServices;
 
-public class FakeCurrencyService : ICurrencyService
+public class TestCurrencyService : ICurrencyService
 {
     private readonly decimal _rate;
     private readonly Exception? _exception;
 
-    public FakeCurrencyService(decimal rate)
+    public TestCurrencyService(decimal rate)
     {
         _rate = rate;
         _exception = null;
     }
 
-    public FakeCurrencyService(Exception exception)
+    public TestCurrencyService(Exception exception)
     {
         _exception = exception;
     }
