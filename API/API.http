@@ -1,0 +1,64 @@
+@API_HostAddress = http://localhost:5192
+
+# Zaloguj się jako admin
+
+POST {{API_HostAddress}}/Auth/sign-in
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+###
+
+# Utwórz konto normalnego użytkownika
+
+POST {{API_HostAddress}}/Auth/sign-up
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "user"
+}
+
+###
+
+# Zaloguj się jako normalny użytkownik
+
+POST {{API_HostAddress}}/Auth/sign-in
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "user"
+}
+
+###
+
+# Odśwież token dostępowy
+
+POST {{API_HostAddress}}/Auth/refresh
+
+###
+
+# Wyloguj się
+
+POST {{API_HostAddress}}/Auth/sign-out
+
+###
+
+# Dostań się do zabezpieczonej końcówki jak zalogowany użytkownik
+# W ramach opcji Authorization po słowie Bearer należy wkleić access token otrzymany w procesie rejestracji/logowania/refreshu
+
+POST {{API_HostAddress}}/User
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhOWFhMTg0NC0zMjliLTQ3Y2MtYjUzZC05YWQ0OTUwNzRlNWEiLCJ1bmlxdWVfbmFtZSI6ImFkbWluIiwicm9sZSI6IiIsIm5iZiI6MTc3OTU1MDU0MywiZXhwIjoxNzc5NTUxMTQzLCJpYXQiOjE3Nzk1NTA1NDMsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTE5MiIsImF1ZCI6ImFwaSJ9.OhaD_8BXkalWBNrKQOANquc_dpkzHwV-bKqv8l5MjNc
+
+###
+
+# Dostań się do zabezpieczonej końcówki jak zalogowany admin
+# W ramach opcji Authorization po słowie Bearer należy wkleić access token otrzymany w procesie rejestracji/logowania/refreshu
+# Dostęp do tej końcówki ma tylko użytkownik o nazwie "admin" i haśle "admin" z racji tego, że tylko on posiada rolę "Admin"
+
+POST {{API_HostAddress}}/Admin
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMGI4NDIzYi0xOWNhLTRhYjgtYjE2Yi1hNmIxMWE3ZjA0OTQiLCJ1bmlxdWVfbmFtZSI6InVzZXIiLCJyb2xlIjoiVXNlciIsIm5iZiI6MTc3OTUyMTc1OSwiZXhwIjoxNzc5NTIyMzU5LCJpYXQiOjE3Nzk1MjE3NTksImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTE5MiIsImF1ZCI6ImFwaSJ9.tmcwgV3j3_2T6wJVppL-0Cl_L50_T_YCL62oUemKCE0
