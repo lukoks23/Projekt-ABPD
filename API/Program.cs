@@ -30,16 +30,11 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IContractService, ContractService>();
 builder.Services.AddScoped<IAccountantService, AccountantService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 
-
-// Source - https://stackoverflow.com/a/79835686
-// Posted by Nermin, modified by community. See post 'Timeline' for change history
-// Retrieved 2026-06-19, License - CC BY-SA 4.0
 
 builder.Services.AddSwaggerGen(options =>
 {
-    // ...
-
     options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
     {
         Type = SecuritySchemeType.Http,

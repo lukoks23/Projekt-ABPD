@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Services.BusinessServices;
 
-public class AccountantService(DatabaseContext ctx) : IAccountantService
+public class AccountantService(DatabaseContext ctx, ICurrencyService currencyService) : IAccountantService
 {
     public async Task<OutRealIncome> GetIncomeAsync(int? softwareId,string? currencyCode, bool? expected, CancellationToken ct)
     {
@@ -42,29 +42,8 @@ public class AccountantService(DatabaseContext ctx) : IAccountantService
 
         if (currencyCode is not null && currencyCode != "PLN")
         {
-            using var client = new HttpClient();
-
-            var response = await client.GetAsync($"http://api.nbp.pl/api/exchangerates/rates/a/{currencyCode}?format=json",ct);
-
-            if (response.StatusCode == HttpStatusCode.NotFound)
-            {
-                response = await client.GetAsync($"http://api.nbp.pl/api/exchangerates/rates/b/{currencyCode}?format=json",ct);
-                if (response.StatusCode == HttpStatusCode.NotFound)
-                {
-                    throw new NotFoundException("Currency code not found");
-                }
-            }
-            response.EnsureSuccessStatusCode();
-
-            var result = await response.Content.ReadFromJsonAsync<CurrencyDto>(ct);
-            if (result is not null)
-            {
-                return new OutRealIncome(sum / result.Rates.First().Mid, currencyCode);
-            }
-            else
-            {
-                throw new NotFoundException("Currency exchange rate not found");
-            }
+            var val = currencyService.GetCurrencyRateAsync(currencyCode, ct);
+            return new OutRealIncome(sum / await val, currencyCode);
         }
 
         return new OutRealIncome(sum, "PLN");

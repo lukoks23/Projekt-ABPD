@@ -2,12 +2,16 @@
 using API.Entities.BusinessEntities;
 using API.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Version = API.Entities.BusinessEntities.Version;
 
 namespace API.Infrastructure;
 
-public class DatabaseContext(DbContextOptions opt, IConfiguration configuration, IPasswordService passwordService) : DbContext(opt)
+public class DatabaseContext : DbContext
 {
+    private readonly IConfiguration _configuration;
+    private DbContextOptions _opt;
+    
     public virtual DbSet<Role> Roles { get; set; }
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Country> Countries { get; set; }
@@ -32,10 +36,37 @@ public class DatabaseContext(DbContextOptions opt, IConfiguration configuration,
     public virtual DbSet<Version> Versions { get; set; }
     public virtual DbSet<AvailableVersion> AvailableVersions { get; set; }
 
+    public DatabaseContext(DbContextOptions opt) : base(opt)
+    {
+    }
+
+    public DatabaseContext(DbContextOptions opt, IConfiguration configuration) :
+        base(opt)
+    {
+        this._configuration = configuration;
+    }
+    
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.ConfigureWarnings(w =>
+            w.Ignore(InMemoryEventId.TransactionIgnoredWarning));
+    }
+
+
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        if (_configuration == null)
+        {
+            modelBuilder.Entity<Address>()
+                .Property(a => a.ApartmentNumber)
+                .IsRequired(false);
+            return;
+        }
+
+        
         base.OnModelCreating(modelBuilder);
-        modelBuilder.HasDefaultSchema(configuration["DB:DefaultSchema"]);
+        modelBuilder.HasDefaultSchema(_configuration["DB:DefaultSchema"]);
 
         modelBuilder.Entity<Role>().HasData(
             new Role {Id = 1, Name = "Admin"},
