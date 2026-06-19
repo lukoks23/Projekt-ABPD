@@ -7,26 +7,13 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-// [Authorize]
+[Authorize]
 public class WorkerController(ICustomerService customerService, IContractService contractService, IAccountantService accountantService) : ControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> AddCustomerAsync([FromBody] InCustomerDto customer, CancellationToken token)
     {
         return Created("",await customerService.AddCustomerAsync(customer,token));
-    }
-
-    [HttpDelete]
-    public async Task<IActionResult> DeleteCustomerAsync(string pesel, CancellationToken token)
-    {
-        await customerService.DeleteCustomerAsync(pesel, token);
-        return NoContent();
-    }
-
-    [HttpPut]
-    public async Task<IActionResult> UpdateCustomerAsync([FromBody] InUpdateCustomerDto customer, CancellationToken token)
-    {
-        return Ok(await customerService.UpdateCustomerAsync(customer,token));
     }
 
     [HttpPost]

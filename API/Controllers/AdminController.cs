@@ -1,3 +1,5 @@
+using API.DTOs.BusinessDTOs;
+using API.Services.BusinessServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,11 +9,18 @@ namespace API.Controllers;
 [Route("[controller]")]
 [Authorize(Roles = "Admin")] // <-- adnotacja authorize dodająca wymóg bycia zautentykowanym w aplikacji
                              // oraz spełnienia reguł, które ewentualnie mogą być w niej zawarte.
-public class AdminController : ControllerBase
+public class AdminController(ICustomerService customerService) : ControllerBase
 {
-    [HttpGet]
-    public IActionResult Get()
+    [HttpDelete]
+    public async Task<IActionResult> DeleteCustomerAsync(string pesel, CancellationToken token)
     {
-        return Ok("Jestem adminem!");
+        await customerService.DeleteCustomerAsync(pesel, token);
+        return NoContent();
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> UpdateCustomerAsync([FromBody] InUpdateCustomerDto customer, CancellationToken token)
+    {
+        return Ok(await customerService.UpdateCustomerAsync(customer,token));
     }
 }
